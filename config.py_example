@@ -1,0 +1,2 @@
+OPENWEATHERMAP_URL = "https://api.openweathermap.org/data/2.5/weather?lat=37.79649707505265&lon=-122.43199656295778&appid=XYZ"
+ACCUWEATHER_URL = "http://dataservice.accuweather.com/currentconditions/v1/2154484?apikey=XYZ&details=true"
