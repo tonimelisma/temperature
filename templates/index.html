@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Weather in 1999 Green St</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            margin: 0em;
+            padding: 1em 2em;
+        }
+
+        h1 {
+            margin: 0.2em;
+            padding: 1em;
+            font-size: 3em;
+            background-color: #242424;
+            display: inline-block;
+        }
+
+        h2 {
+            margin: 0.2em;
+            padding: 1em;
+            background-color: #242424;
+            display: inline-block;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>{{ temperature_celsius|round|int }}°C / {{ temperature_fahrenheit|round|int }}°F</h1>
+    <br />
+    <h2>Feels like {{ heat_index_celsius|round|int }}°C / {{ heat_index_fahrenheit|round|int }}°F</h1>
+    <br />
+    <h2>{{ humidity|round|int }}%</h2>
+    <h2>{{ pressure|round|int }} hPa</h2>
+    <br />
+    <h2>{{ timestamp.strftime('%a %m/%d %-I:%M %p') }}</h2>
+</body>
+
+</html>
