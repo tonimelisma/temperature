@@ -1,0 +1,2 @@
+* * * * * python3 /home/toni/temperature/measurementworker.py
+0 * * * * python3 /home/toni/temperature/weatherapi.py

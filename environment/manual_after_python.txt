@@ -1,5 +1,6 @@
 apt-listchanges
 avahi-daemon
+bsd-mailx
 byobu
 cifs-utils
 dmidecode
@@ -15,6 +16,7 @@ firmware-realtek
 git
 hardlink
 htop
+i2c-tools
 ifupdown
 iputils-ping
 libcamera-apps-lite
@@ -24,6 +26,7 @@ ncdu
 ntfs-3g
 pi-bluetooth
 pkg-config
+postfix
 python-is-python3
 python3-gpiozero
 python3-picamera2
@@ -38,6 +41,7 @@ raspinfo
 rpi-update
 rsync
 rsyslog
+sqlite3
 ssh
 sudo
 udisks2

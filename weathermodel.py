@@ -108,4 +108,4 @@ if __name__ == "__main__":
     #    logging.error("Unspecified error: " + repr(Exception))
     # print(select_latest_measurement())
     initialize()
-    print(calculate_latest_average_windspeed())
+    #print(calculate_latest_average_windspeed())
