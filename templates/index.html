@@ -31,12 +31,12 @@
 </head>
 
 <body>
-    <h1>{{ temperature_celsius|round|int }}°C / {{ temperature_fahrenheit|round|int }}°F</h1>
+    <h1>🌡{{ temperature_celsius|round|int }}°C / {{ temperature_fahrenheit|round|int }}°F</h1>
     <br />
     <h2>Feels like {{ heat_index_celsius|round|int }}°C / {{ heat_index_fahrenheit|round|int }}°F</h1>
     <br />
-    <h2>{{ humidity|round|int }}%</h2>
-    <h2>{{ pressure|round|int }} hPa</h2>
+    <h2>💧{{ humidity|round|int }}%</h2>
+    <h2>🎚{{ pressure|round|int }} hPa</h2>
     <br />
     <h2>{{ timestamp.strftime('%a %m/%d %-I:%M %p') }}</h2>
 </body>
