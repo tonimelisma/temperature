@@ -82,6 +82,13 @@ def select_latest_measurement():
     return (this_measurement)
 
 
+def select_last7days_measurements():
+    session = Session(engine)
+    stmt = select(Measurement).order_by(Measurement.timestamp.desc()).limit(10080)
+    measurements = session.scalars(stmt)
+    return (measurements)
+
+
 def calculate_latest_average_windspeed():
     session = Session(engine)
     ds1_stmt = select(APICurrentCondition).where(APICurrentCondition.data_source ==
@@ -108,4 +115,4 @@ if __name__ == "__main__":
     #    logging.error("Unspecified error: " + repr(Exception))
     # print(select_latest_measurement())
     initialize()
-    #print(calculate_latest_average_windspeed())
+    # print(calculate_latest_average_windspeed())

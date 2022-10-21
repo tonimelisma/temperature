@@ -2,7 +2,7 @@
 #
 # Copyright (c) Toni Melisma 2022
 
-from flask import Flask, Response, render_template
+from flask import Flask, Response, render_template, jsonify
 import weathermodel
 from meteocalc import Temp, feels_like
 
@@ -32,3 +32,13 @@ def index_handler():
         temperature=this_temperature, humidity=latest_measurement.humidity, wind_speed=latest_windspeed)
 
     return render_template("index.html", temperature_celsius=latest_measurement.temperature, temperature_fahrenheit=this_temperature.f, heat_index_celsius=feels_like_temperature.c, heat_index_fahrenheit=feels_like_temperature.f, pressure=latest_measurement.pressure, pressure_classification=pressure_classification, humidity=latest_measurement.humidity, timestamp=latest_measurement.timestamp)
+
+
+@app.route("/last7days")
+def last7days_handler():
+    measurements = weathermodel.select_last7days_measurements()
+    list = []
+    for thisrow in measurements:
+        list.append({"timestamp": thisrow.timestamp, "temperature": thisrow.temperature,
+                    "pressure": thisrow.pressure, "humidity": thisrow.humidity})
+    return (jsonify(list))
