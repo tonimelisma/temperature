@@ -2,16 +2,19 @@
 #
 # Copyright (c) Toni Melisma 2022
 
+import time
 import meteocalc
 from sqlalchemy import Column, String, DateTime, Float, Integer, create_engine, select
 from sqlalchemy.orm import declarative_base, Session
 
 Base = declarative_base()
-#engine = create_engine("sqlite:///db.sqlite", echo=True, future=True)
-engine = create_engine("sqlite:////home/toni/db.sqlite", future=True)
+# engine = create_engine("sqlite:////home/toni/db.sqlite", future=True)
+# Enable logging of all SQL queries
+engine = create_engine("sqlite:////home/toni/db.sqlite", future=True, echo=True)
 
 
 # Data model
+
 
 class Measurement(Base):
     __tablename__ = "measurements"
@@ -46,6 +49,7 @@ class APICurrentCondition(Base):
     humidity_adjusted_temperature = Column(Float)
     wind_adjusted_temperature = Column(Float)
 
+
 # Initialize datamodel
 
 
@@ -56,9 +60,13 @@ def initialize():
 def insert_measurement(new_measurement):
     if not isinstance(new_measurement, Measurement):
         raise ValueError("parameter is not a valid measurement")
-    if (not new_measurement.id or not new_measurement.timestamp
-        or not new_measurement.temperature or not new_measurement.pressure
-            or not new_measurement.humidity):
+    if (
+        not new_measurement.id
+        or not new_measurement.timestamp
+        or not new_measurement.temperature
+        or not new_measurement.pressure
+        or not new_measurement.humidity
+    ):
         raise ValueError("missing values for measurement")
     with Session(engine) as session:
         session.add(new_measurement)
@@ -68,7 +76,13 @@ def insert_measurement(new_measurement):
 def insert_api_current_condition(new_api_reading):
     if not isinstance(new_api_reading, APICurrentCondition):
         raise ValueError("parameter is not a valid reading")
-    if (not new_api_reading.timestamp or not new_api_reading.temperature or not new_api_reading.pressure or not new_api_reading.humidity or not new_api_reading.wind_speed):
+    if (
+        not new_api_reading.timestamp
+        or not new_api_reading.temperature
+        or not new_api_reading.pressure
+        or not new_api_reading.humidity
+        or not new_api_reading.wind_speed
+    ):
         raise ValueError("missing required values for API reading")
     with Session(engine) as session:
         session.add(new_api_reading)
@@ -76,29 +90,49 @@ def insert_api_current_condition(new_api_reading):
 
 
 def select_latest_measurement():
+    start_time = time.time()
+
     session = Session(engine)
-    stmt = select(Measurement).order_by(Measurement.timestamp.desc())
+    print(f"Time after session creation: {time.time() - start_time}s")
+
+    stmt = select(Measurement).order_by(Measurement.timestamp.desc()).limit(1)
+    print(f"Time after statement creation: {time.time() - start_time}s")
+
     this_measurement = session.scalars(stmt).first()
-    return (this_measurement)
+    print(f"Time after fetching the measurement: {time.time() - start_time}s")
+
+    return this_measurement
 
 
 def select_last7days_measurements():
     session = Session(engine)
     stmt = select(Measurement).order_by(Measurement.timestamp.desc()).limit(10080)
     measurements = session.scalars(stmt)
-    return (measurements)
+    return measurements
+
+
+from itertools import groupby
 
 
 def calculate_latest_average_windspeed():
     session = Session(engine)
-    ds1_stmt = select(APICurrentCondition).where(APICurrentCondition.data_source ==
-                                                 "accuweather").order_by(APICurrentCondition.timestamp.desc())
-    ds1_data = session.scalars(ds1_stmt).first()
-    ds2_stmt = select(APICurrentCondition).where(APICurrentCondition.data_source ==
-                                                 "openweathermap").order_by(APICurrentCondition.timestamp.desc())
-    ds2_data = session.scalars(ds2_stmt).first()
-    average_windspeed = (ds1_data.wind_speed + ds2_data.wind_speed) / 2
-    return (average_windspeed)
+    stmt = (
+        select(APICurrentCondition)
+        .where(APICurrentCondition.data_source.in_(["accuweather", "openweathermap"]))
+        .order_by(APICurrentCondition.data_source, APICurrentCondition.timestamp.desc())
+    )
+    # Fetch all results
+    all_data = session.scalars(stmt).all()
+    # Group by data_source and take the first record of each group (the latest one)
+    latest_data = {
+        data_source: next(group)
+        for data_source, group in groupby(all_data, key=lambda x: x.data_source)
+    }
+
+    average_windspeed = (
+        latest_data["accuweather"].wind_speed + latest_data["openweathermap"].wind_speed
+    ) / 2
+    return average_windspeed
 
 
 if __name__ == "__main__":
